@@ -4,7 +4,7 @@ import time
 import os
 import google.generativeai as genai
 
-API_KEY = ""
+API_KEY = "YOUR_API_KEY"
 
 PROMPT_TEMPLATE = """
 以下の文章から重要と思われる単語を抽出してください
@@ -30,7 +30,9 @@ def extract_keywords_and_meanings(text_to_analyze):
     
 def create_and_open_html(original_text, analysis_result):
     try:
-        with open("TSA.html", "r", encoding="utf-8") as file:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        html_template_path = os.path.join(script_dir, "TSA.html")
+        with open(html_template_path, "r", encoding="utf-8") as file:
             html_content = file.read()
     except FileNotFoundError:
         print("エラー:　TSA.htmlが見つかりません。")
@@ -43,17 +45,17 @@ def create_and_open_html(original_text, analysis_result):
     html_content = html_content.replace("%%ANALYSIS_RESULT%%", html_body)
 
     try:
-        filepath = f"analysis_result_{int(time.time())}.html"
+        filepath = os.path.join(script_dir, "analysis_result.html")
         with open(filepath, "w", encoding="utf-8") as f:
             f.write(html_content)
 
-        full_path = os.path.abspath(filepath)
-        webbrowser.open(f"file://{full_path}")
-        print(f"-> 結果を {filepath} に保存し、ブラウザで開きました")
+        filepath = os.path.join(script_dir, "analysis_result.html")
+
+        webbrowser.open_new_tab(f"file://{filepath}")
+        print(f"-> 結果を {os.path.basename(filepath)}に上書き保存し、ブラウザで開きました")
     
     except Exception as e:
         print(f"HTMLファイルの作成または氷人い失敗しました: {e}")
-
 
 def main():
     print("クリップボードの監視を開始")
@@ -82,6 +84,6 @@ def main():
     
 if __name__ == "__main__":
     if API_KEY == 'YOUR_API_KEY':
-        print("エラー: コード上部の API_WKEYを自身のGeminiAPIキーに置き換えてください")
+        print("エラー: コード上部の API_KEYを自身のGeminiAPIキーに置き換えてください")
     else:
         main()
